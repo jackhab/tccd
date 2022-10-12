@@ -5,15 +5,22 @@
 AutoItSetOption("MustDeclareVars", 1)
 
 ;get Total Commander window handler
-Local $hTcWin = WinWait("[CLASS:TTOTAL_CMD]", "", 1)
+Local $hTcWin = WinGetHandle("[CLASS:TTOTAL_CMD]")
 If $hTcWin = 0 Then
     ConsoleWrite("Total Commander window is not found")
     Exit
 EndIf
 
-;get path bar text for left and right panels
-Local $sLeftPath  = ControlGetText($hTcWin, "", "[CLASSNN:Window13]")
-Local $sRightPath = ControlGetText($hTcWin, "", "[CLASSNN:Window18]")
+;get path handles
+Local $hLeftPath =  DllCall("user32.dll", "handle", "SendMessage", "hwnd", $hTcWin, "uint", 1074, "wparam", 9,  "lparam", 0)[0]
+Local $hRightPath = DllCall("user32.dll", "handle", "SendMessage", "hwnd", $hTcWin, "uint", 1074, "wparam", 10, "lparam", 0)[0]
+
+;get path text
+Local $sLeftPath  = ControlGetText($hTcWin, "", $hLeftPath)
+Local $sRightPath = ControlGetText($hTcWin, "", $hRightPath)
+
+;Local $sLeftPath  = ControlGetText($hTcWin, "", "[CLASSNN:Window13]")
+;Local $sRightPath = ControlGetText($hTcWin, "", "[CLASSNN:Window18]")
 
 ;trim trailing non-path chars
 $sLeftPath  = StringRegExpReplace($sLeftPath, "\\[^\\]+$", "")
@@ -25,6 +32,11 @@ $sRightPath = StringRegExpReplace($sRightPath, "\\[^\\]+$", "")
 If $CmdLine[0] = "" Then
     ConsoleWrite($sLeftPath & @CRLF)
     ConsoleWrite($sRightPath & @CRLF)
+
+ElseIf ($CmdLine[1] = "d") Then
+    ConsoleWrite("TC window " & $hTcWin & @CRLF)
+    ConsoleWrite("Left path " & $hLeftPath & @CRLF)
+    ConsoleWrite("Right path " & $hRightPath & @CRLF)
 
 ElseIf ($CmdLine[1] = "l" Or $CmdLine[1] = "1") Then
     ShellExecute (@ScriptFullPath, "cdl", "", "", @SW_HIDE)
