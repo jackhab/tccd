@@ -8,6 +8,8 @@
 
 #NoTrayIcon
 #include <AutoItConstants.au3>
+#include <SendMessage.au3>
+#include <WindowsConstants.au3>
 AutoItSetOption("MustDeclareVars", 1)
 
 
@@ -71,6 +73,14 @@ ElseIf ($CmdLine[1] = "t" And $iSide = 1 ) Then
 ElseIf ($CmdLine[1] = "t" And $iSide = 2 ) Then
     _ChangeFolder($sLeftPath)
 
+ElseIf $CmdLine[1] = "." Then
+    ConsoleWrite("SEND" & @CRLF)
+    WinActivate($hTcWin)
+    WinWaitActive($hTcWin, 1)
+    ControlClick($hTcWin, "", "[CLASSNN:Window13]")
+    Sleep(1000)
+    Send(@WorkingDir & @CRLF, $SEND_RAW)
+
 ElseIf $CmdLine[1] = "/?" Then
     ConsoleWrite("TCCD by jackhab"                                            & @CRLF & _
         "This utility reads left and right panel paths from Total Commander"  & @CRLF & _
@@ -81,8 +91,10 @@ ElseIf $CmdLine[1] = "/?" Then
         "    tccd r|2   cd to right path"                                     & @CRLF & _
         "    tccd s     cd to source path"                                    & @CRLF & _
         "    tccd t     cd to target path"                                    & @CRLF & _
+        "    tccd .     set Total Commander to current path"                  & @CRLF & _
         @CRLF )
 EndIf
+
 Exit
 
 
